@@ -1,0 +1,35 @@
+baseURL = 'http://example.org/'
+languageCode = 'en-us'
+title = 'Michael Goodale'
+theme = "notrack"
+mainSections = ["blog"]
+# disqusShortname = "example"
+paginate = 4
+
+[params]
+  author = "Michael Goodale"
+  siteHeading = "Michael Goodale" # defaults to author
+  favicon = "img/favicon.png" # Adds a small icon next to the page title in a tab
+  showBlogLatest = true
+  mainSections = ["blog"]
+  showTaxonomyLinks = false
+  nBlogLatest = 4 # number of blog post om the home page
+  blogLatestHeading = "My writing"
+  footer = "All that is solid melts into air."
+
+  [params.social]
+    github = "example"
+    linkedin = "example"
+    email = "example@example.com"
+    mastodon = "example"
+    medium = "example"
+    keybase = "example"
+
+[taxonomies]
+  year = "year"
+  month = "month"
+  tags = "tags"
+  categories = "categories"
+
+[permalinks]
+  blog = "/blog/:year/:month/:slug"
