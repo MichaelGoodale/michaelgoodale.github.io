@@ -15,7 +15,7 @@ paginate = 4
   showTaxonomyLinks = false
   nBlogLatest = 4 # number of blog post om the home page
   blogLatestHeading = "My writing"
-  footer = "All that is solid melts into air."
+  footer = ""
 
   [params.social]
     github = "mgoodale"
