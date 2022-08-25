@@ -25,7 +25,7 @@ You can download my full résumé [here](/documents/resume-michael-goodale.pdf).
 
 
 {{< container >}}
-    {{% resume-section title="Selected Publications" %}}
+    {{% resume-section title="Research" %}}
 * **Michael Goodale** & Salvador Mascarenhas (2022, August 8). Do contextual word embeddings represent richly subsective adjectives more diversely than intersective adjectives? Bridges and Gaps Workshop ESSLLI 2022, Galway, Ireland. [Slides](/documents/subsective-adjectives-ESSLLI.pdf) [Abstract](/documents/subsective-adjectives-abstract.pdf)
 * Michael McAuliffe, Arlie Coles, **Michael Goodale**, Sarah Mihuc, Michael Wagner, Jane Stuart-Smith,
 and Morgan Sonderegger. ISCAN: a system for integrated phonetic analyses across speech corpora.
