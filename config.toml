@@ -18,12 +18,9 @@ paginate = 4
   footer = "All that is solid melts into air."
 
   [params.social]
-    github = "example"
-    linkedin = "example"
-    email = "example@example.com"
-    mastodon = "example"
-    medium = "example"
-    keybase = "example"
+    github = "mgoodale"
+    linkedin = "michaelgoodale"
+    email = "michael.goodale@mail.mcgill.ca"
 
 [taxonomies]
   year = "year"
