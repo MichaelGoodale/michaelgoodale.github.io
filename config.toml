@@ -1,4 +1,4 @@
-baseURL = 'http://example.org/'
+baseURL = 'https://michaelgoodale.com/'
 languageCode = 'en-us'
 title = 'Michael Goodale'
 theme = "notrack"
