@@ -14,7 +14,7 @@ Hi, I'm Michael Goodale.
 Currently I'm working as a research assistant at [Institut Jean-Nicod](http://www.institutnicod.org/?lang=fr) at [École normale supérieure](https://en.wikipedia.org/wiki/%C3%89cole_normale_sup%C3%A9rieure_(Paris)) where I am working with [Prof. Salvador Mascarenhas](https://web-risc.ens.fr/~smascarenhas/).
 Our current project is looking at pragmatic implicatures in natural language inference systems which is generously funded by a grant from [PRAIRIE](https://prairie-institute.fr/)
 
-My research interests largely lay at the interface of formal semantics, cognitive psychology and natural language processing.
+My research interests largely lie at the interface of formal semantics, cognitive psychology and natural language processing.
 I am particularly interested in neurosymbolic models of conceptual processing and reasoning more generally.
 
 I did a master's degree in cognitive science at ENS where I developed a model of conceptual processing where the core primitives of formal semantics, discrete sets, are replaced with continuous representations, namely manifolds.
