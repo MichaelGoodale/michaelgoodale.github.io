@@ -19,7 +19,7 @@ I am particularly interested in neurosymbolic models of conceptual processing an
 
 I did a master's degree in cognitive science at ENS where I developed a model of conceptual processing where the core primitives of formal semantics, discrete sets, are replaced with continuous representations, namely manifolds.
 This was to develop a novel account of privative adjectives, generic statements, and classical reasoning errors like conjunction fallacy. 
-You can find a copy of it [here on lingbuzz]().
+You can find a copy of it [here on lingbuzz](https://ling.auf.net/lingbuzz/006797).
 
 You can download my full résumé [here](/documents/resume-michael-goodale.pdf).
 
