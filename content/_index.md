@@ -26,6 +26,7 @@ You can download my full résumé [here](/documents/resume-michael-goodale.pdf).
 {{< container >}}
 {{% resume-section title="Research" %}}
 
+- **Michael Goodale**, Salvador Mascarenhas (2023). Systematic polysemy in adjective-noun combination in contextual word embeddings. [LingBuzz](https://lingbuzz.net/lingbuzz/007644)
 - Can Konuk, **Michael Goodale**, Tadeg Quillien, Salvador Mascarenhas (2023, July 26). Plural causes in causal judgement. Proceedings of the Annual Meeting of the Cognitive Science Society, Sydney, Australia. [PsyArXiv](https://psyarxiv.com/nuptb/)
 - **Michael Goodale**. Manifolds as conceptual representations in formal semantics. MA Thesis, École normale supérieure, 2022. [LingBuzz](https://ling.auf.net/lingbuzz/006797)
 - **Michael Goodale** & Salvador Mascarenhas (2022, August 8). Do contextual word embeddings represent richly subsective adjectives more diversely than intersective adjectives? Bridges and Gaps Workshop ESSLLI 2022, Galway, Ireland. [Slides](/documents/subsective-adjectives-ESSLLI.pdf) [Abstract](/documents/subsective-adjectives-abstract.pdf)
