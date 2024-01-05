@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en-US">
+  <head>
+    <meta charset="utf-8" />
+    <title>Minimalist grammar parser</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+      integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN"
+      crossorigin="anonymous"
+    />
+  </head>
+  <body>
+    <div class="container text-center">
+      <div class="row justify-content-md-center">
+        <div class="col col-lg-3">
+          <h4>Grammar settings</h4>
+          <form action="" id="grammar-settings">
+            <button type="button" class="btn btn-secondary" id="lemma-add">
+              Add
+            </button>
+          </form>
+        </div>
+        <div class="col col-lg-6" id="parse-tree"></div>
+        <div class="col col-lg-3">
+          <h4>Parse settings</h4>
+          <form action="" id="parse-settings">
+            <div class="input-group mb-2">
+              <span class="input-group-text">Min log prob</span>
+              <input
+                type="number"
+                class="form-control"
+                value="-64"
+                max="0"
+                step="1"
+                id="min_log_prob_input"
+              />
+            </div>
+
+            <div class="input-group mb-2">
+              <span class="input-group-text">Max steps</span>
+              <input
+                type="number"
+                class="form-control"
+                value="250"
+                min="1"
+                step="1"
+                id="max_steps_input"
+              />
+            </div>
+            <div class="input-group mb-2">
+              <span class="input-group-text">Max beams</span>
+              <input
+                type="number"
+                class="form-control"
+                value="50"
+                min="1"
+                step="1"
+                id="max_beams_input"
+              />
+            </div>
+          </form>
+        </div>
+      </div>
+      <div class="row justify-content-md-center">
+        <div class="col col-lg-6" id="sentence-input">
+          <form action="" id="sentence-form">
+            <input
+              class="form-control form-control-lg"
+              type="text"
+              name="sentence"
+              placeholder="Enter sentence to parse"
+              aria-label="sentence"
+            />
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <script
+      src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.min.js"
+      integrity="sha384-BBtl+eGJRgqQAUMxJ7pMwbEyER4l1g+O15P+16Ep7Q9Q+zqX6gSbd85u4mG4QzX+"
+      crossorigin="anonymous"
+    ></script>
+    <script type="module">
+      import init, { get_parse } from "./mg_pkg/mg_viewer.js";
+      import { Graphviz } from "https://cdn.jsdelivr.net/npm/@hpcc-js/wasm/dist/graphviz.js";
+
+      const graphviz = await Graphviz.load();
+      let sentence_input = document.querySelector(
+        '#sentence-input input[type="text"]'
+      );
+      let form = document.querySelector("form#sentence-form");
+      let grammar_form = document.querySelector("form#grammar-settings");
+
+      let lemma_adder = document.getElementById("lemma-add");
+
+      function addLemma(lemma, features) {
+        let div = document.createElement("div");
+        div.innerHTML = `<div class="input-group mb-3">
+      	<input name="lemma" type="text" class="form-control" placeholder="ε" aria-label="lemma" value="${lemma}">
+      	<span class="input-group-text">::</span>
+      	<input name="features" type="text" class="form-control" placeholder="features" aria-label="features" value="${features}">
+      	<button class="btn btn-danger" type="button" onclick="return this.parentNode.remove();">-</button> </div>`;
+        lemma_adder.before(div);
+      }
+
+      lemma_adder.addEventListener("click", function (e) {
+        addLemma("", "");
+      });
+
+      let default_grammar = [
+        ["", "V= C"],
+        ["", "V= +W C"],
+        ["knows", "C= =D V"],
+        ["says", "C= =D V"],
+        ["prefers", "D= =D V"],
+        ["drinks", "D= =D V"],
+        ["king", "N"],
+        ["wine", "N"],
+        ["beer", "N"],
+        ["queen", "N"],
+        ["the", "N= D"],
+        ["which", "N= D -W"],
+      ];
+
+      default_grammar.forEach((e) => {
+        addLemma(e[0], e[1]);
+      });
+
+      function getGrammar() {
+        let fd = new FormData(grammar_form);
+        fd.getAll("lemma");
+        fd.getAll("features");
+        let lemma = null;
+        let strings = [];
+        for (let [_, data] of fd) {
+          if (lemma == null) {
+            lemma = data;
+          } else {
+            strings.push(`${lemma}::${data}`);
+            lemma = null;
+          }
+        }
+        return strings.join("\n");
+      }
+
+      init().then(() => {
+        form.addEventListener("submit", function (e) {
+          e.preventDefault();
+          let sentence = sentence_input.value.toLowerCase();
+
+          const max_beams = document.getElementById("max_beams_input").value;
+          const max_steps = document.getElementById("max_steps_input").value;
+          const min_log_prob =
+            document.getElementById("min_log_prob_input").value;
+          let s = get_parse(
+            sentence,
+            getGrammar(),
+            min_log_prob,
+            max_beams,
+            max_steps
+          );
+          const svg = graphviz.dot(s);
+          const div = document.getElementById("parse-tree");
+          if (s) {
+            div.innerHTML = svg;
+            document.querySelectorAll("svg").forEach((e) => {
+              e.classList.add("img-fluid");
+              e.removeAttr("width").removeAttr("height");
+            });
+          } else {
+            div.innerHTML = "No parse :(";
+          }
+        });
+      });
+    </script>
+  </body>
+</html>

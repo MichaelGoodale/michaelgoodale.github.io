@@ -1,0 +1,14 @@
+{
+  "name": "mg-viewer",
+  "version": "0.1.0",
+  "files": [
+    "mg_viewer_bg.wasm",
+    "mg_viewer.js",
+    "mg_viewer.d.ts"
+  ],
+  "module": "mg_viewer.js",
+  "types": "mg_viewer.d.ts",
+  "sideEffects": [
+    "./snippets/*"
+  ]
+}
