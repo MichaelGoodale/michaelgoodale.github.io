@@ -66,13 +66,30 @@
       <div class="row justify-content-md-center">
         <div class="col col-lg-6" id="sentence-input">
           <form action="" id="sentence-form">
-            <input
-              class="form-control form-control-lg"
-              type="text"
-              name="sentence"
-              placeholder="Enter sentence to parse"
-              aria-label="sentence"
-            />
+            <div class="input-group mb-3">
+              <input
+                class="form-control form-control-lg"
+                type="text"
+                name="sentence"
+                placeholder="Enter sentence to parse"
+                aria-label="sentence"
+              />
+            </div>
+
+            <div class="row justify-content-md-center">
+              <div class="input-group mb-3 w-50">
+                <span class="input-group-text">Input category</span>
+                <input
+                  class="form-control form-control-lg"
+                  type="text"
+                  name="category"
+                  value="C"
+                  id="category"
+                  aria-label="category"
+                />
+                <button class="btn btn-primary">Parse</button>
+              </div>
+            </div>
           </form>
         </div>
       </div>
@@ -84,7 +101,7 @@
       crossorigin="anonymous"
     ></script>
     <script type="module">
-      import init, { get_parse } from "./mg_pkg/mg_viewer.js";
+      import init, { get_parse } from "./pkg/mg_viewer.js";
       import { Graphviz } from "https://cdn.jsdelivr.net/npm/@hpcc-js/wasm/dist/graphviz.js";
 
       const graphviz = await Graphviz.load();
@@ -153,11 +170,13 @@
 
           const max_beams = document.getElementById("max_beams_input").value;
           const max_steps = document.getElementById("max_steps_input").value;
+          const category = document.getElementById("category").value;
           const min_log_prob =
             document.getElementById("min_log_prob_input").value;
           let s = get_parse(
             sentence,
             getGrammar(),
+            category,
             min_log_prob,
             max_beams,
             max_steps
