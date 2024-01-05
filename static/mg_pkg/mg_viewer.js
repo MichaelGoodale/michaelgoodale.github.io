@@ -104,17 +104,18 @@ function takeObject(idx) {
 /**
 * @param {string} sentence
 * @param {string} grammar
+* @param {string} target_category
 * @param {number} min_log_prob
 * @param {number} max_steps
 * @param {number} max_beams
 * @returns {any}
 */
-export function get_parse(sentence, grammar, min_log_prob, max_steps, max_beams) {
+export function get_parse(sentence, grammar, target_category, min_log_prob, max_steps, max_beams) {
     const ptr0 = passStringToWasm0(sentence, wasm.__wbindgen_malloc, wasm.__wbindgen_realloc);
     const len0 = WASM_VECTOR_LEN;
     const ptr1 = passStringToWasm0(grammar, wasm.__wbindgen_malloc, wasm.__wbindgen_realloc);
     const len1 = WASM_VECTOR_LEN;
-    const ret = wasm.get_parse(ptr0, len0, ptr1, len1, min_log_prob, max_steps, max_beams);
+    const ret = wasm.get_parse(ptr0, len0, ptr1, len1, target_category.codePointAt(0), min_log_prob, max_steps, max_beams);
     return takeObject(ret);
 }
 
