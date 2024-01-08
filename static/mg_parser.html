@@ -10,6 +10,10 @@
       integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN"
       crossorigin="anonymous"
     />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css"
+    />
   </head>
   <body>
     <div class="container text-center">
@@ -17,9 +21,63 @@
         <div class="col col-lg-3">
           <h4>Grammar settings</h4>
           <form action="" id="grammar-settings">
-            <button type="button" class="btn btn-secondary" id="lemma-add">
-              Add
-            </button>
+            <div class="input-group mb-3">
+              <span class="input-group-text">Input category</span>
+              <input
+                class="form-control"
+                type="text"
+                name="category"
+                id="category"
+                aria-label="category"
+              />
+            </div>
+            <div id="lexemes"></div>
+            <div class="row mb-2">
+              <button
+                type="button"
+                class="btn btn-secondary col"
+                id="lemma-add"
+              >
+                Add lexeme
+              </button>
+            </div>
+            <div class="row">
+              <button
+                type="button"
+                class="col-2 btn btn-secondary"
+                id="save-button"
+              >
+                <i class="bi bi-floppy"></i>
+              </button>
+
+              <div class="col-2">
+                <button
+                  type="button"
+                  class="btn btn-secondary"
+                  id="upload-button"
+                >
+                  <i class="bi bi-upload"></i>
+                </button>
+                <input type="file" id="upload-button-file" hidden />
+              </div>
+
+              <div class="dropdown col-8">
+                <button
+                  class="btn btn-secondary dropdown-toggle"
+                  type="button"
+                  id="dropdownMenuButton1"
+                  data-bs-toggle="dropdown"
+                  aria-expanded="false"
+                >
+                  Built-in grammars
+                </button>
+                <ul
+                  class="dropdown-menu"
+                  id="grammar-selection"
+                  aria-labelledby="dropdownMenuButton1"
+                ></ul>
+              </div>
+            </div>
           </form>
         </div>
         <div class="col col-lg-6" id="parse-tree"></div>
@@ -74,30 +132,15 @@
                 placeholder="Enter sentence to parse"
                 aria-label="sentence"
               />
-            </div>
-
-            <div class="row justify-content-md-center">
-              <div class="input-group mb-3 w-50">
-                <span class="input-group-text">Input category</span>
-                <input
-                  class="form-control form-control-lg"
-                  type="text"
-                  name="category"
-                  value="C"
-                  id="category"
-                  aria-label="category"
-                />
-                <button class="btn btn-primary">Parse</button>
-              </div>
+              <button class="btn btn-primary">Parse</button>
             </div>
           </form>
         </div>
       </div>
     </div>
-
     <script
-      src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.min.js"
-      integrity="sha384-BBtl+eGJRgqQAUMxJ7pMwbEyER4l1g+O15P+16Ep7Q9Q+zqX6gSbd85u4mG4QzX+"
+      src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"
+      integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL"
       crossorigin="anonymous"
     ></script>
     <script type="module">
@@ -111,55 +154,143 @@
       let form = document.querySelector("form#sentence-form");
       let grammar_form = document.querySelector("form#grammar-settings");
 
-      let lemma_adder = document.getElementById("lemma-add");
+      let lexemes = document.getElementById("lexemes");
 
       function addLemma(lemma, features) {
         let div = document.createElement("div");
-        div.innerHTML = `<div class="input-group mb-3">
+        div.classList.add("input-group");
+        div.classList.add("mb-2");
+        div.innerHTML = `
       	<input name="lemma" type="text" class="form-control" placeholder="ε" aria-label="lemma" value="${lemma}">
       	<span class="input-group-text">::</span>
       	<input name="features" type="text" class="form-control" placeholder="features" aria-label="features" value="${features}">
-      	<button class="btn btn-danger" type="button" onclick="return this.parentNode.remove();">-</button> </div>`;
-        lemma_adder.before(div);
+      	<button class="btn btn-danger" type="button" onclick="return this.parentNode.remove();">-</button>`;
+        lexemes.appendChild(div);
       }
 
-      lemma_adder.addEventListener("click", function (e) {
-        addLemma("", "");
+      function clearLexemes() {
+        while (lexemes.firstChild) {
+          lexemes.removeChild(lexemes.lastChild);
+        }
+      }
+
+      document
+        .getElementById("lemma-add")
+        .addEventListener("click", function (e) {
+          addLemma("", "");
+        });
+
+      let grammars = {
+        "Stabler 2013": [
+          "C",
+          [
+            ["", "V= C"],
+            ["", "V= +W C"],
+            ["knows", "C= =D V"],
+            ["says", "C= =D V"],
+            ["prefers", "D= =D V"],
+            ["drinks", "D= =D V"],
+            ["king", "N"],
+            ["wine", "N"],
+            ["beer", "N"],
+            ["queen", "N"],
+            ["the", "N= D"],
+            ["which", "N= D -W"],
+          ],
+        ],
+        "Copy language": [
+          "T",
+          [
+            ["", "=T +r +l T"],
+            ["", "T -r -l"],
+            ["a", "=A +l T -l"],
+            ["a", "=T +r A -r"],
+            ["b", "=B +l T -l"],
+            ["b", "=T +r B -r"],
+          ],
+        ],
+      };
+
+      grammars["Stabler 2013"][1].forEach((e) => {
+        addLemma(e[0], e[1]);
+      });
+      document.getElementById("category").value = grammars["Stabler 2013"][0];
+      let selection = document.getElementById("grammar-selection");
+
+      for (const [name, data] of Object.entries(grammars)) {
+        const initial_category = data[0];
+        const grammar = data[1];
+
+        let li = document.createElement("li");
+        li.innerHTML = `<li><a class="dropdown-item">${name}</a></li>`;
+        selection.appendChild(li);
+        li.addEventListener("click", (e) => {
+          clearLexemes();
+          grammar.forEach((e) => {
+            addLemma(e[0], e[1]);
+          });
+          document.getElementById("category").value = initial_category;
+        });
+      }
+      document.getElementById("upload-button").addEventListener("click", () => {
+        document.getElementById("upload-button-file").click();
       });
 
-      let default_grammar = [
-        ["", "V= C"],
-        ["", "V= +W C"],
-        ["knows", "C= =D V"],
-        ["says", "C= =D V"],
-        ["prefers", "D= =D V"],
-        ["drinks", "D= =D V"],
-        ["king", "N"],
-        ["wine", "N"],
-        ["beer", "N"],
-        ["queen", "N"],
-        ["the", "N= D"],
-        ["which", "N= D -W"],
-      ];
+      function readFileContent(file) {
+        const reader = new FileReader();
+        return new Promise((resolve, reject) => {
+          reader.onload = (e) => resolve(e.target.result);
+          reader.onerror = (err) => reject(err);
+          reader.readAsText(file);
+        });
+      }
 
-      default_grammar.forEach((e) => {
-        addLemma(e[0], e[1]);
+      document
+        .getElementById("upload-button-file")
+        .addEventListener("change", (e) => {
+          const input = e.target;
+          if ("files" in input && input.files.length > 0) {
+            readFileContent(input.files[0])
+              .then((content) => {
+                clearLexemes();
+                let data = content.split("\n");
+                document.getElementById("category").value = data[0];
+                data.slice(1).forEach((x) => {
+                  let [lemma, ...rest] = x.split("::");
+                  addLemma(lemma, rest.join(" "));
+                });
+              })
+              .catch((error) => console.log(error));
+          }
+        });
+
+      document.getElementById("save-button").addEventListener("click", (e) => {
+        let a = document.createElement("a");
+        let file = new Blob(
+          [`${document.getElementById("category").value}\n${getGrammar()}`],
+          { type: "text" }
+        );
+        a.href = URL.createObjectURL(file);
+        a.download = prompt(
+          "Please enter a filename for your grammar",
+          "grammar.mg"
+        );
+        a.click();
       });
 
       function getGrammar() {
         let fd = new FormData(grammar_form);
-        fd.getAll("lemma");
-        fd.getAll("features");
         let lemma = null;
         let strings = [];
-        for (let [_, data] of fd) {
-          if (lemma == null) {
+        for (let [x, data] of fd) {
+          if (x == "lemma") {
             lemma = data;
-          } else {
-            strings.push(`${lemma}::${data}`);
+          } else if (x == "features") {
+            strings.push(`${lemma.trim()}::${data.trim()}`);
             lemma = null;
           }
         }
+        alert(strings);
         return strings.join("\n");
       }
 
@@ -187,7 +318,8 @@
             div.innerHTML = svg;
             document.querySelectorAll("svg").forEach((e) => {
               e.classList.add("img-fluid");
-              e.removeAttr("width").removeAttr("height");
+              e.removeAttribute("width");
+              e.removeAttribute("height");
             });
           } else {
             div.innerHTML = "No parse :(";
