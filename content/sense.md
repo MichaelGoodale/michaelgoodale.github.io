@@ -1,11 +1,16 @@
 ---
 title: "Sense as sampling propensity"
-date: 2020-06-01T16:16:24+02:00
+date: 2024-05-29T16:16:24+02:00
 draft: false
 menu:
   main:
     name: "Home"
     weight: 1
+    pageRef: /
 ---
 
-Test
+Some resources on my research on modes of presentation, presented at SALT 34.
+
+- [Handout](/documents/sense-as-sampling-propensity-salt-handout.pdf)
+- [Slide](/documents/sense-as-sampling-propensity-salt-slide.pdf)
+- [Poster](/documents/sense-as-sampling-propensity-salt-poster.pdf)
