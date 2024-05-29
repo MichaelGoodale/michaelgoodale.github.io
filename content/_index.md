@@ -5,7 +5,7 @@ draft: false
 menu:
   main:
     name: "Home"
-    weight: 1
+    weight: 2
 ---
 
 {{<image float="right" width="11em" frame="true" caption="Picture of me on a lovely terrasse in the small medieval town of Najac" src="img/me.jpg" >}}
