@@ -4,9 +4,8 @@ date: 2024-05-26T16:16:24+02:00
 draft: false
 menu:
   main:
-    name: "Home"
+    name: "Sense as sampling propensity"
     weight: 1
-    url: /index.html
 ---
 
 Some resources on my research on modes of presentation, presented at SALT 34.
