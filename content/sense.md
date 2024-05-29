@@ -5,7 +5,7 @@ draft: false
 menu:
   main:
     name: "Sense as sampling propensity"
-    weight: 1
+    weight: 2
 ---
 
 Some resources on my research on modes of presentation, presented at SALT 34.
