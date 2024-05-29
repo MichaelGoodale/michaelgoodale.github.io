@@ -6,7 +6,7 @@ menu:
   main:
     name: "Home"
     weight: 1
-    url: /
+    url: ../
 ---
 
 Some resources on my research on modes of presentation, presented at SALT 34.
