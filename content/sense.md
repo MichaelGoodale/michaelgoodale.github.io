@@ -13,4 +13,4 @@ Some resources on my research on modes of presentation, presented at SALT 34.
 - [Handout](/documents/sense-as-sampling-propensity-salt-handout.pdf)
 - [Slide](/documents/sense-as-sampling-propensity-salt-slide.pdf)
 - [Poster](/documents/sense-as-sampling-propensity-salt-poster.pdf)
-- Manuscript (coming soon!) 
+- [Manuscript](https://lingbuzz.net/lingbuzz/008465)

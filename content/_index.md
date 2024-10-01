@@ -26,7 +26,9 @@ You can download my full résumé [here](/documents/resume-michael-goodale.pdf).
 {{< container >}}
 {{% resume-section title="Research" %}}
 
-- **Michael Goodale**, Salvador Mascarenhas (2023, December 16). Fodor and Pylyshyn’s systematicity challenge still stands: A reply to Lake and Baroni (2023) (Manuscript under review, [Lingbuzz](https://lingbuzz.net/lingbuzz/007759))
+- **Michael Goodale**, Salvador Mascarenhas (2024, September 17) Fodor and Pylyshyn’s systematicity challenge still stands: A reply to Lake and Baroni. Oral Presentation. 3rd International Conference on Human and Artificial Rationalities.
+- **Michael Goodale**, (2023, May 29). Sense as sampling propensity. Poster. Semantics and Linguistic Theory (SALT) 34. [LingBuzz](https://lingbuzz.net/lingbuzz/008465)
+- **Michael Goodale**, Salvador Mascarenhas (2023, December 16). Fodor and Pylyshyn’s systematicity challenge still stands: A reply to Lake and Baroni (2023) (Preprint, [Lingbuzz](https://lingbuzz.net/lingbuzz/007759))
 - **Michael Goodale** (2023, November 17). Sense as sampling propensity. [13th Paris Amsterdam Logic Meeting of Young Researchers.](https://events.illc.uva.nl/PALLMYR/PALLMYR-XIII) [Slides](/documents/sense-as-sampling-propensity-pallmyr-slides.pdf) [Handout](/documents/sense-as-sampling-propensity-pallmyr-handout.pdf)
 - **Michael Goodale**, Salvador Mascarenhas (2023). Systematic polysemy in adjective-noun combination in contextual word embeddings. [LingBuzz](https://lingbuzz.net/lingbuzz/007644)
 - Can Konuk, **Michael Goodale**, Tadeg Quillien, Salvador Mascarenhas (2023, July 26). Plural causes in causal judgement. Proceedings of the Annual Meeting of the Cognitive Science Society, Sydney, Australia. [PsyArXiv](https://psyarxiv.com/nuptb/)
