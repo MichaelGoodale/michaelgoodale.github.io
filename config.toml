@@ -30,3 +30,8 @@ categories = "categories"
 
 [permalinks]
 blog = "/blog/:year/:month/:slug"
+
+[caches]
+
+[caches.images]
+dir = ':cacheDir/images'
