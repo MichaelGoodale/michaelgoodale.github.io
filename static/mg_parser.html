@@ -80,7 +80,7 @@
             </div>
           </form>
         </div>
-        <div class="col col-lg-6" id="parse-tree"></div>
+        <div class="col col-lg-6" id="parse-tree" style="display: table;"></div>
         <div class="col col-lg-3">
           <h4>Parse settings</h4>
           <form action="" id="parse-settings">
@@ -138,6 +138,8 @@
         </div>
       </div>
     </div>
+
+    <script src="https://d3js.org/d3.v7.min.js"></script>
     <script
       src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"
       integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL"
@@ -145,9 +147,6 @@
     ></script>
     <script type="module">
       import init, { get_parse } from "./pkg/mg_viewer.js";
-      import { Graphviz } from "https://cdn.jsdelivr.net/npm/@hpcc-js/wasm/dist/graphviz.js";
-
-      const graphviz = await Graphviz.load();
       let sentence_input = document.querySelector(
         '#sentence-input input[type="text"]'
       );
@@ -173,6 +172,47 @@
           lexemes.removeChild(lexemes.lastChild);
         }
       }
+
+      function build_nodes(node) {
+        let data = null;
+        let children = [];
+        if (Array.isArray(node)) {
+          data = node.shift();
+          children = node.map(build_nodes);
+        }else{
+          data = node;
+        }
+
+        data = remap_node(data);
+
+        data["children"] = children
+
+        return data
+      }
+
+      function remap_node(node) {
+        const obj = {trace: false}
+
+        if ("Node" in node){
+          obj["features"] = node["Node"]["features"]
+
+        }else if ("Leaf" in node){
+          obj["features"] = node["Leaf"]["features"]
+          let lemma = node.Leaf.lemma; 
+          if ("Single" in lemma) {
+            obj["lemma"] = lemma["Single"]
+            if (obj["lemma"] == null) {
+              obj["lemma"] = "ε";
+            }
+          }else {
+            obj["lemma"] = JSON.stringify(lemma);
+          }
+        }else { //trace 
+          obj["trace"] = true
+        }
+        return obj
+      }
+
 
       document
         .getElementById("lemma-add")
@@ -254,8 +294,7 @@
               .then((content) => {
                 clearLexemes();
                 let data = content.split("\n");
-                document.getElementById("category").value = data[0];
-                data.slice(1).forEach((x) => {
+                data.forEach((x) => {
                   let [lemma, ...rest] = x.split("::");
                   addLemma(lemma, rest.join(" "));
                 });
@@ -267,7 +306,7 @@
       document.getElementById("save-button").addEventListener("click", (e) => {
         let a = document.createElement("a");
         let file = new Blob(
-          [`${document.getElementById("category").value}\n${getGrammar()}`],
+          [getGrammar()],
           { type: "text" }
         );
         a.href = URL.createObjectURL(file);
@@ -311,17 +350,86 @@
             max_beams,
             max_steps
           );
-          const svg = graphviz.dot(s);
-          const div = document.getElementById("parse-tree");
+
+
           if (s) {
-            div.innerHTML = svg;
-            document.querySelectorAll("svg").forEach((e) => {
-              e.classList.add("img-fluid");
-              e.removeAttribute("width");
-              e.removeAttribute("height");
+            document.getElementById("parse-tree").innerHTML = "";
+
+            const tree = build_nodes(JSON.parse(s));
+            const root = d3.hierarchy(tree);
+            const padding = 10;
+
+            const dx = 40;
+            const dy = 40;
+
+            d3.tree().nodeSize([dx, dy])(root);
+
+              // Center the tree.
+            let x0 = Infinity;
+            let x1 = -x0;
+            let y0 = Infinity;
+            let y1 = -x0;
+            root.each(d => {
+              if (d.x > x1) x1 = d.x;
+              if (d.x < x0) x0 = d.x;
+              if (d.y > y1) y1 = d.y;
+              if (d.y < y0) y0 = d.y;
             });
+
+
+            const height = y1 - y0 + dx *2;
+            const width = x1 - x0 + dx *2;
+
+
+            const svg = d3.select("#parse-tree").append("svg").attr("viewBox", 
+              [x0 - dy, y0 - dx, width, height] )
+              .style("width", "100%")
+              .style("height", "auto")
+              .attr("preserveAspectRatio", "xMinYMin meet")
+              .attr("font-family", "sans-serif")
+              .attr("font-size", 10);
+
+
+            svg.append("g")
+                .attr("fill", "none")
+                .attr("stroke", "#000")
+              .selectAll("path")
+                .data(root.links())
+                .join("path")
+                  .attr("d", d3.link(d3.curveBumpX)
+                  .target((d) => {
+                    return {x: d.target.x, y: d.target.y - 10}
+                })
+                .source((d) => {
+                  return {x: d.source.x, y: d.source.y + 5}
+                })
+                .x(d => d.x).y(d=>d.y));
+
+            const node = svg.append("g")
+              .selectAll("a")
+              .data(root.descendants())
+              .join("a")
+                .attr("transform", d => `translate(${d.x},${d.y})`);
+
+
+            node.append("text").text(d => {
+              if (d.data.trace) {
+                return "t";
+              }else{
+                return d.data.features.join(" ");
+              }
+            }).attr("text-anchor", "middle");
+
+            node.append("text").text(d => {
+              if (d.data.lemma != undefined){
+                return d.data.lemma;
+              }else{
+                return "";
+              }
+            }).attr("text-anchor", "middle").attr("dy", "1em");
+
           } else {
-            div.innerHTML = "No parse :(";
+            document.getElementById("parse-tree").innerHTML = "<h4 style=\"display: table-cell; vertical-align: middle;\">No Parse :(</h4>";
           }
         });
       });
