@@ -16,12 +16,21 @@
     />
   </head>
   <body>
-    <div class="container text-center">
-      <div class="row justify-content-md-center">
-        <div class="col col-lg-3">
-          <h4>Grammar settings</h4>
-          <form action="" id="grammar-settings">
-            <div class="input-group mb-3">
+    <div class="container">
+      <div class="row">
+        <div class="col col-8">
+          <div id="parse-tree" class="border border-3 rounded-3 border-primary" style="min-height: 50vh;">
+          </div>
+          <div class="mx-auto">
+            <form action="" id="sentence-form">
+              <div class="input-group mb-3">
+              </div>
+            </form>
+          </div>
+        </div>
+        <div class="col col-4">
+            <form action="" id="parse" class="my-2">
+            <div class="input-group mb-2">
               <span class="input-group-text">Input category</span>
               <input
                 class="form-control"
@@ -31,68 +40,15 @@
                 aria-label="category"
               />
             </div>
-            <div id="lexemes"></div>
-            <div class="row mb-2">
-              <button
-                type="button"
-                class="btn btn-secondary col"
-                id="lemma-add"
-              >
-                Add lexeme
-              </button>
-            </div>
-            <div class="row">
-              <button
-                type="button"
-                class="col-2 btn btn-secondary"
-                id="save-button"
-              >
-                <i class="bi bi-floppy"></i>
-              </button>
-
-              <div class="col-2">
-                <button
-                  type="button"
-                  class="btn btn-secondary"
-                  id="upload-button"
-                >
-                  <i class="bi bi-upload"></i>
-                </button>
-                <input type="file" id="upload-button-file" hidden />
-              </div>
-
-              <div class="dropdown col-8">
-                <button
-                  class="btn btn-secondary dropdown-toggle"
-                  type="button"
-                  id="dropdownMenuButton1"
-                  data-bs-toggle="dropdown"
-                  aria-expanded="false"
-                >
-                  Built-in grammars
-                </button>
-                <ul
-                  class="dropdown-menu"
-                  id="grammar-selection"
-                  aria-labelledby="dropdownMenuButton1"
-                ></ul>
-              </div>
-            </div>
-          </form>
-        </div>
-        <div class="col col-lg-6" id="parse-tree" style="display: table;"></div>
-        <div class="col col-lg-3">
-          <h4>Parse settings</h4>
-          <form action="" id="parse-settings">
             <div class="input-group mb-2">
               <span class="input-group-text">Min log prob</span>
               <input
                 type="number"
+                name="min_log_prob"
                 class="form-control"
                 value="-64"
                 max="0"
                 step="1"
-                id="min_log_prob_input"
               />
             </div>
 
@@ -104,7 +60,7 @@
                 value="250"
                 min="1"
                 step="1"
-                id="max_steps_input"
+                name="max_steps"
               />
             </div>
             <div class="input-group mb-2">
@@ -115,26 +71,42 @@
                 value="50"
                 min="1"
                 step="1"
-                id="max_beams_input"
+                name="max_beams"
               />
             </div>
-          </form>
-        </div>
-      </div>
-      <div class="row justify-content-md-center">
-        <div class="col col-lg-6" id="sentence-input">
-          <form action="" id="sentence-form">
+            <div class="dropdown mb-2">
+              <button
+                class="btn btn-outline-secondary dropdown-toggle w-100"
+                type="button"
+                id="grammars"
+                data-bs-toggle="dropdown"
+                aria-expanded="false"
+              >
+                Built-in grammars
+              </button>
+              <ul
+                class="dropdown-menu"
+                id="grammar-selection"
+                aria-labelledby="grammars"
+              ></ul>
+            </div>
+            <div class="mb-3 input-group">
+              <span class="input-group-text">Grammar</span>
+              <textarea class="form-control" name="grammar" id="grammar" rows="12"></textarea>
+            </div>
             <div class="input-group mb-3">
-              <input
-                class="form-control form-control-lg"
-                type="text"
-                name="sentence"
-                placeholder="Enter sentence to parse"
-                aria-label="sentence"
-              />
-              <button class="btn btn-primary">Parse</button>
+                <input
+                  class="form-control form-control-lg"
+                  type="text"
+                  name="sentence"
+                  id="sentence"
+                  placeholder="Enter sentence to parse"
+                  aria-label="sentence"
+                />
+                <button class="btn btn-primary">Parse</button> 
             </div>
           </form>
+          <div id="errors"></div>
         </div>
       </div>
     </div>
@@ -145,294 +117,6 @@
       integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL"
       crossorigin="anonymous"
     ></script>
-    <script type="module">
-      import init, { get_parse } from "./pkg/mg_viewer.js";
-      let sentence_input = document.querySelector(
-        '#sentence-input input[type="text"]'
-      );
-      let form = document.querySelector("form#sentence-form");
-      let grammar_form = document.querySelector("form#grammar-settings");
-
-      let lexemes = document.getElementById("lexemes");
-
-      function addLemma(lemma, features) {
-        let div = document.createElement("div");
-        div.classList.add("input-group");
-        div.classList.add("mb-2");
-        div.innerHTML = `
-      	<input name="lemma" type="text" class="form-control" placeholder="ε" aria-label="lemma" value="${lemma}">
-      	<span class="input-group-text">::</span>
-      	<input name="features" type="text" class="form-control" placeholder="features" aria-label="features" value="${features}">
-      	<button class="btn btn-danger" type="button" onclick="return this.parentNode.remove();">-</button>`;
-        lexemes.appendChild(div);
-      }
-
-      function clearLexemes() {
-        while (lexemes.firstChild) {
-          lexemes.removeChild(lexemes.lastChild);
-        }
-      }
-
-      function build_nodes(node) {
-        let data = null;
-        let children = [];
-        if (Array.isArray(node)) {
-          data = node.shift();
-          children = node.map(build_nodes);
-        }else{
-          data = node;
-        }
-
-        data = remap_node(data);
-
-        data["children"] = children
-
-        return data
-      }
-
-      function remap_node(node) {
-        const obj = {trace: false}
-
-        if ("Node" in node){
-          obj["features"] = node["Node"]["features"]
-
-        }else if ("Leaf" in node){
-          obj["features"] = node["Leaf"]["features"]
-          let lemma = node.Leaf.lemma; 
-          if ("Single" in lemma) {
-            obj["lemma"] = lemma["Single"]
-            if (obj["lemma"] == null) {
-              obj["lemma"] = "ε";
-            }
-          }else {
-            obj["lemma"] = JSON.stringify(lemma);
-          }
-        }else { //trace 
-          obj["trace"] = true
-        }
-        return obj
-      }
-
-
-      document
-        .getElementById("lemma-add")
-        .addEventListener("click", function (e) {
-          addLemma("", "");
-        });
-
-      let grammars = {
-        "Stabler 2013": [
-          "C",
-          [
-            ["", "V= C"],
-            ["", "V= +W C"],
-            ["knows", "C= =D V"],
-            ["says", "C= =D V"],
-            ["prefers", "D= =D V"],
-            ["drinks", "D= =D V"],
-            ["king", "N"],
-            ["wine", "N"],
-            ["beer", "N"],
-            ["queen", "N"],
-            ["the", "N= D"],
-            ["which", "N= D -W"],
-          ],
-        ],
-        "Copy language": [
-          "T",
-          [
-            ["", "=T +r +l T"],
-            ["", "T -r -l"],
-            ["a", "=A +l T -l"],
-            ["a", "=T +r A -r"],
-            ["b", "=B +l T -l"],
-            ["b", "=T +r B -r"],
-          ],
-        ],
-      };
-
-      grammars["Stabler 2013"][1].forEach((e) => {
-        addLemma(e[0], e[1]);
-      });
-      document.getElementById("category").value = grammars["Stabler 2013"][0];
-      let selection = document.getElementById("grammar-selection");
-
-      for (const [name, data] of Object.entries(grammars)) {
-        const initial_category = data[0];
-        const grammar = data[1];
-
-        let li = document.createElement("li");
-        li.innerHTML = `<li><a class="dropdown-item">${name}</a></li>`;
-        selection.appendChild(li);
-        li.addEventListener("click", (e) => {
-          clearLexemes();
-          grammar.forEach((e) => {
-            addLemma(e[0], e[1]);
-          });
-          document.getElementById("category").value = initial_category;
-        });
-      }
-      document.getElementById("upload-button").addEventListener("click", () => {
-        document.getElementById("upload-button-file").click();
-      });
-
-      function readFileContent(file) {
-        const reader = new FileReader();
-        return new Promise((resolve, reject) => {
-          reader.onload = (e) => resolve(e.target.result);
-          reader.onerror = (err) => reject(err);
-          reader.readAsText(file);
-        });
-      }
-
-      document
-        .getElementById("upload-button-file")
-        .addEventListener("change", (e) => {
-          const input = e.target;
-          if ("files" in input && input.files.length > 0) {
-            readFileContent(input.files[0])
-              .then((content) => {
-                clearLexemes();
-                let data = content.split("\n");
-                data.forEach((x) => {
-                  let [lemma, ...rest] = x.split("::");
-                  addLemma(lemma, rest.join(" "));
-                });
-              })
-              .catch((error) => console.log(error));
-          }
-        });
-
-      document.getElementById("save-button").addEventListener("click", (e) => {
-        let a = document.createElement("a");
-        let file = new Blob(
-          [getGrammar()],
-          { type: "text" }
-        );
-        a.href = URL.createObjectURL(file);
-        a.download = prompt(
-          "Please enter a filename for your grammar",
-          "grammar.mg"
-        );
-        a.click();
-      });
-
-      function getGrammar() {
-        let fd = new FormData(grammar_form);
-        let lemma = null;
-        let strings = [];
-        for (let [x, data] of fd) {
-          if (x == "lemma") {
-            lemma = data;
-          } else if (x == "features") {
-            strings.push(`${lemma.trim()}::${data.trim()}`);
-            lemma = null;
-          }
-        }
-        return strings.join("\n");
-      }
-
-      init().then(() => {
-        form.addEventListener("submit", function (e) {
-          e.preventDefault();
-          let sentence = sentence_input.value.toLowerCase();
-
-          const max_beams = document.getElementById("max_beams_input").value;
-          const max_steps = document.getElementById("max_steps_input").value;
-          const category = document.getElementById("category").value;
-          const min_log_prob =
-            document.getElementById("min_log_prob_input").value;
-          let s = get_parse(
-            sentence,
-            getGrammar(),
-            category,
-            min_log_prob,
-            max_beams,
-            max_steps
-          );
-
-
-          if (s) {
-            document.getElementById("parse-tree").innerHTML = "";
-
-            const tree = build_nodes(JSON.parse(s));
-            const root = d3.hierarchy(tree);
-            const padding = 10;
-
-            const dx = 40;
-            const dy = 40;
-
-            d3.tree().nodeSize([dx, dy])(root);
-
-              // Center the tree.
-            let x0 = Infinity;
-            let x1 = -x0;
-            let y0 = Infinity;
-            let y1 = -x0;
-            root.each(d => {
-              if (d.x > x1) x1 = d.x;
-              if (d.x < x0) x0 = d.x;
-              if (d.y > y1) y1 = d.y;
-              if (d.y < y0) y0 = d.y;
-            });
-
-
-            const height = y1 - y0 + dx *2;
-            const width = x1 - x0 + dx *2;
-
-
-            const svg = d3.select("#parse-tree").append("svg").attr("viewBox", 
-              [x0 - dy, y0 - dx, width, height] )
-              .style("width", "100%")
-              .style("height", "auto")
-              .attr("preserveAspectRatio", "xMinYMin meet")
-              .attr("font-family", "sans-serif")
-              .attr("font-size", 10);
-
-
-            svg.append("g")
-                .attr("fill", "none")
-                .attr("stroke", "#000")
-              .selectAll("path")
-                .data(root.links())
-                .join("path")
-                  .attr("d", d3.link(d3.curveBumpX)
-                  .target((d) => {
-                    return {x: d.target.x, y: d.target.y - 10}
-                })
-                .source((d) => {
-                  return {x: d.source.x, y: d.source.y + 5}
-                })
-                .x(d => d.x).y(d=>d.y));
-
-            const node = svg.append("g")
-              .selectAll("a")
-              .data(root.descendants())
-              .join("a")
-                .attr("transform", d => `translate(${d.x},${d.y})`);
-
-
-            node.append("text").text(d => {
-              if (d.data.trace) {
-                return "t";
-              }else{
-                return d.data.features.join(" ");
-              }
-            }).attr("text-anchor", "middle");
-
-            node.append("text").text(d => {
-              if (d.data.lemma != undefined){
-                return d.data.lemma;
-              }else{
-                return "";
-              }
-            }).attr("text-anchor", "middle").attr("dy", "1em");
-
-          } else {
-            document.getElementById("parse-tree").innerHTML = "<h4 style=\"display: table-cell; vertical-align: middle;\">No Parse :(</h4>";
-          }
-        });
-      });
-    </script>
+    <script src="./mg-viewer.js" type="module"></script>
   </body>
 </html>
