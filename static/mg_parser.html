@@ -16,21 +16,15 @@
     />
   </head>
   <body>
-    <div class="container">
-      <div class="row">
+    <div class="container mt-2">
+      <div class="row d-flex align-items-stretch">
         <div class="col col-8">
-          <div id="parse-tree" class="border border-3 rounded-3 border-primary" style="min-height: 50vh;">
-          </div>
-          <div class="mx-auto">
-            <form action="" id="sentence-form">
-              <div class="input-group mb-3">
-              </div>
-            </form>
+          <div id="parse-tree" class="border border-3 rounded-3 border-primary h-100">
           </div>
         </div>
         <div class="col col-4">
             <form action="" id="parse" class="my-2">
-            <div class="input-group mb-2">
+            <div class="input-group my-2">
               <span class="input-group-text">Input category</span>
               <input
                 class="form-control"
@@ -106,6 +100,12 @@
                 <button class="btn btn-primary">Parse</button> 
             </div>
           </form>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col col-8">
+        </div>
+        <div class="col col-4">
           <div id="errors"></div>
         </div>
       </div>

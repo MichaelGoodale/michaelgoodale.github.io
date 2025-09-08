@@ -180,8 +180,8 @@ function set_parse_tree(s) {
   const svg = d3.select("#parse-tree").append("svg").attr("viewBox",
     [x0 - dy, y0 - dx, width, height])
     .style("width", "100%")
-    .style("height", "auto")
-    .attr("preserveAspectRatio", "xMinYMin meet")
+    .style("height", "100%")
+    .attr("preserveAspectRatio", "xMinYMid meet")
     .attr("font-family", "sans-serif")
     .attr("font-size", 10);
 
