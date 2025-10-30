@@ -27,14 +27,14 @@ const drag = simulation => {
 
 
 
-function build_nodes(node, counter = { value: 0 }) {
+function build_nodes(node, gorn = "", counter = { value: 0 }) {
   let data = null;
   let id = counter.value;
   counter.value++;
   let children = [];
   if (Array.isArray(node)) {
     data = node.shift();
-    children = node.map(x => build_nodes(x, counter));
+    children = node.map((x, i) => build_nodes(x, gorn + i.toString(), counter));
   } else {
     data = node;
   }
@@ -42,49 +42,36 @@ function build_nodes(node, counter = { value: 0 }) {
   data = remap_node(data);
 
   data["id"] = id;
+  data["gorn"] = gorn;
   data["children"] = children
   return data
 }
 
 
 function remap_node(node) {
-  const obj = { trace: {} }
+  const obj = { stolen: false }
 
   if ("Node" in node) {
     obj["features"] = node["Node"]["features"]
-    if (node["Node"]["trace"] !== null) {
-      obj["trace"] = { "dest": node["Node"]["trace"] };
-    }
 
   } else if ("Leaf" in node) {
     obj["features"] = node["Leaf"]["features"]
-
-    if (node["Leaf"]["trace"] !== null) {
-      obj["trace"] = { "dest": node["Leaf"]["trace"] };
-    }
-
     let lemma = node.Leaf.lemma;
     if ("Single" in lemma) {
       obj["lemma"] = lemma["Single"]
       if (obj["lemma"] == null) {
         obj["lemma"] = "ε";
       }
-    } else if ("Stolen" in lemma) {
-      obj["lemma"] = "ε";
     } else if ("Multi" in lemma) {
-      console.log(lemma);
-      obj["lemma"] = lemma["Multi"].map(x => {
+      obj["lemma"] = lemma["Multi"]["heads"].map(x => {
         return x == null || x.length == 0 ? "ε" : x
       }).join("-");
+      obj["stolen"] = lemma["Multi"]["stolen"];
     } else {
       obj["lemma"] = JSON.stringify(lemma);
     }
-  } else { //trace 
-    if (node["Trace"]["new_trace"] !== null) {
-      obj["trace"] = { "start": node["Trace"]["new_trace"], "dest": node["Trace"]["trace"] };
-    } else {
-      obj["trace"] = { "start": node["Trace"]["trace"] };
-    }
+  } else if (node["Trace"]["trace"] !== null) {
+    obj["trace"] = node["Trace"]["trace"];
   }
   return obj
 }
@@ -116,6 +103,21 @@ let grammars = {
       "b::=T +r B -r",
     ].join("\n"),
   ],
+  "Stabler 2013 with head movement": ["C", [
+    "::T= C",
+    "::T= +W C",
+    "s::=>V =D T",
+    "know::C= V",
+    "say::C= V",
+    "prefer::D= V",
+    "drink::D= V",
+    "king::N",
+    "wine::N",
+    "beer::N",
+    "queen::N",
+    "the::N= D",
+    "which::N= D -W"
+  ].join("\n")]
 };
 
 
@@ -143,7 +145,9 @@ for (const [name, data] of Object.entries(grammars)) {
 function set_parse_tree(s) {
   document.getElementById("parse-tree").innerHTML = "";
 
-  const tree = build_nodes(JSON.parse(s));
+
+  const tree_with_movement = JSON.parse(s);
+  const tree = build_nodes(tree_with_movement["tree"]);
   const root = d3.hierarchy(tree);
 
   const links = root.links();
@@ -205,7 +209,7 @@ function set_parse_tree(s) {
 
   textElement.append("tspan")
     .text(d => {
-      if ("start" in d.data.trace) {
+      if ("trace" in d.data) {
         return "t";
       } else {
         return d.data.features.join(" ");
@@ -220,6 +224,8 @@ function set_parse_tree(s) {
     .append("tspan")
     .attr("class", "lemma-tspan")
     .text(d => d.data.lemma)
+    .attr("text-decoration", d => d.data.stolen ? "line-through" : null)
+    .attr("fill", d => d.data.stolen ? "gray" : "black")
     .attr("x", 0)
     .attr("dy", "1em");
 
@@ -260,30 +266,23 @@ function set_parse_tree(s) {
     .force("y", d3.forceY(d => d.targetY).strength(0.25));
   node.call(drag(simulation));
 
-
-  const movers = new Map();
+  const move_details = tree_with_movement["phrasal_movement"].concat(tree_with_movement["head_movement"]);
+  const movers = move_details.map(_ => { return { start: null, dest: null }; });
+  const is_in_move = new Set(move_details.flat());
 
   root.descendants().forEach(node => {
-    const trace = node.data.trace;
-    if ("start" in trace) {
-      const t = trace["start"];
-      let move = movers.get(t)
-      if (move == null) {
-        move = {};
-      }
-      move["start"] = node;
-      movers.set(t, move);
+    if (is_in_move.has(node.data.gorn)) {
+      move_details.forEach((x, i) => {
+        if (node.data.gorn == x[0]) {
+          movers[i]["start"] = node;
+        } else if (node.data.gorn == x[1]) {
+          movers[i]["dest"] = node;
+        }
+        movers[i]["phrasal_movement"] = i < tree_with_movement["phrasal_movement"].length;
+      })
     }
-    if ("dest" in trace) {
-      const t = trace["dest"];
-      let move = movers.get(t)
-      if (move == null) {
-        move = {}
-      }
-      move["dest"] = node;
-      movers.set(t, move);
-    };
   });
+
 
   svg.append("defs").append("marker")
     .attr("id", "arrowhead")
@@ -295,20 +294,18 @@ function set_parse_tree(s) {
     .attr("orient", "auto")
     .append("path")
     .attr("d", "M 0 -5 L 10 0 L 0 5 z")
-    .attr("fill", "#999");
-
+    .attr("fill", "context-stroke");
 
 
   const moveLines = svg.selectAll(".move-line")
-    .data(movers.entries())
+    .data(movers)
     .enter()
     .insert("line", "g")
     .attr("class", "move-line")
-    .attr("stroke", "#999")
+    .attr("stroke", d => d.phrasal_movement ? "#999" : "#636")
     .attr("stroke-width", 1)
     .attr("stroke-dasharray", "2,2")
     .attr("marker-end", "url(#arrowhead)");
-
 
   simulation.on("tick", () => {
     link
@@ -316,11 +313,12 @@ function set_parse_tree(s) {
       .attr("y1", d => d.source.y)
       .attr("x2", d => d.target.x)
       .attr("y2", d => d.target.y);
+
     moveLines
-      .attr("x1", d => d[1].start.x)
-      .attr("y1", d => d[1].start.y)
-      .attr("x2", d => d[1].dest.x < d[1].start.x ? d[1].dest.x + d[1].dest.width / 2 : d[1].dest.x - d[1].dest.width / 2)
-      .attr("y2", d => d[1].dest.y + d[1].dest.height / 2);
+      .attr("x1", d => d.start.x)
+      .attr("y1", d => d.start.y)
+      .attr("x2", d => d.dest.x < d.start.x ? d.dest.x + d.dest.width / 2 : d.dest.x - d.dest.width / 2)
+      .attr("y2", d => d.dest.y + d.dest.height / 2);
 
     node.attr("transform", function (d) {
       return "translate(" + d.x + "," + d.y + ")";
