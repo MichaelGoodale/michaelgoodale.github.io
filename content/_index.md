@@ -12,7 +12,7 @@ menu:
 
 Hi, I'm Michael Goodale.
 I'm a PhD student working at [Institut Jean-Nicod](http://www.institutnicod.org/?lang=fr) at [École normale supérieure](<https://en.wikipedia.org/wiki/%C3%89cole_normale_sup%C3%A9rieure_(Paris)>) where I am advised by [Salvador Mascarenhas](https://web-risc.ens.fr/~smascarenhas/) and [Yair Lakretz](https://prairie-institute.fr/chairs/lakretz-yair/).
-My thesis looks apply different Bayesian inference algorithms to the formalisms that have been developed in theoretical linguistics in order to model language acquisition as well as ways of connecting formal linguistic representations with what is learnt by neural network models.
+My thesis looks to apply different Bayesian inference algorithms to the formalisms that have been developed in theoretical linguistics in order to model language acquisition as well as ways of connecting formal linguistic representations with what is learnt by neural network models.
 
 My research interests largely lie at the interface of formal semantics, cognitive psychology and natural language processing.
 I am particularly interested in neurosymbolic models of conceptual processing and reasoning more generally.
