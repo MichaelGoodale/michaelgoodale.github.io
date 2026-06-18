@@ -26,7 +26,7 @@ You can download my full résumé [here](/documents/resume-michael-goodale.pdf).
 {{< container >}}
 {{% resume-section title="Research" %}}
 
-- **Michael Goodale**, and Salvador Mascarenhas. 2026. Fodor and Pylyshyn's systematicity challenge still stands. Forthcoming in the Transactions of the Association for Computational Linguistics [Lingbuzz](https://lingbuzz.net/lingbuzz/007759)
+- **Michael Goodale**, and Salvador Mascarenhas. 2026. Fodor and Pylyshyn's systematicity challenge still stands. Accepted in the Transactions of the Association for Computational Linguistics ([Lingbuzz](https://lingbuzz.net/lingbuzz/007759) [arXiv](https://arxiv.org/abs/2606.14512))
 - **Michael Goodale**, Salvador Mascarenhas, and Yair Lakretz. 2025. Meta-Learning Neural Mechanisms rather than Bayesian Priors. In Proceedings of the 63rd Annual Meeting of the Association for Computational Linguistics (Volume 1: Long Papers), pages 17588–17605, Vienna, Austria. Association for Computational Linguistics. ([ACL](https://aclanthology.org/2025.acl-long.860/) [arXiv](https://arxiv.org/abs/2503.16048))
 - **Michael Goodale**, Salvador Mascarenhas (2024, September 17) Fodor and Pylyshyn’s systematicity challenge still stands: A reply to Lake and Baroni. Oral Presentation. 3rd International Conference on Human and Artificial Rationalities.
 - **Michael Goodale**, (2023, May 29). Sense as sampling propensity. Poster. Semantics and Linguistic Theory (SALT) 34. [LingBuzz](https://lingbuzz.net/lingbuzz/008465)
